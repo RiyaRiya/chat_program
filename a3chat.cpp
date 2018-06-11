@@ -46,7 +46,7 @@ int main(int argc, char* argv[]){
         num_clients  = atoi(argv[3]) ;
         client_count = 0;
         int sd;
-        int client_socket[6];
+        int client_socket[6]; //contains connected client machines plus stdin
         for (int i = 0; i < 5; i++)
         {
             client_socket[i] = 0;
@@ -55,6 +55,7 @@ int main(int argc, char* argv[]){
         }
         client_socket[5] = fileno(stdin);
         
+        // create non blocking socket that listens to connection requests
         if ((listen_sockid = socket(AF_INET,SOCK_STREAM,0))<0){
             perror("socket error\n");
         }
@@ -75,7 +76,7 @@ int main(int argc, char* argv[]){
         memset(addrport.sin_zero, '\0', sizeof(addrport.sin_zero));
         addrlen = sizeof(addrport);
 
-        
+        // bind socket(endpoint) to address
         if (bind(listen_sockid,(struct sockaddr*)&addrport,sizeof addrport)<0){
             perror("bind error\n");
         }
@@ -350,7 +351,7 @@ int main(int argc, char* argv[]){
                 if (connect(sd, (struct sockaddr *) &addrport, sizeof addrport) < 0) {
                     perror("\nConnect error\n");
                 }
-                // Send connection request to server by writing to infifo
+                // Send open session request to server 
                 if (send(sd, command, strlen(command),0)==-1) {
                     perror("send error\n");
                 }
